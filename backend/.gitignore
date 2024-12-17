@@ -1,0 +1,32 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# Build output
+dist/
+build/
+
+# Optional: Git ignore lock files (not mandatory)
+package-lock.json
+yarn.lock
+
+# Misc
+*.bak
+*.tmp
+
