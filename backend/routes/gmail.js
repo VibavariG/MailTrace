@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { getAuthURL, oauth2Client } = require("../utils/googleAuth");
-const { listEmails } = require("../controllers/gmailController");
+const { listEmails } = require("../controllers/emailsController");
 
 router.get("/auth", (req, res) => {
   const url = getAuthURL();
