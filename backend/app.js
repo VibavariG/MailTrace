@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const gmailRoutes = require("./routes/gmail");
+const gmailRoutes = require("./routes/gmailRoutes");
 require("dotenv").config();
 
 const app = express();
