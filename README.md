@@ -9,3 +9,8 @@ Create a `.env` file in the root directory with the following structure:
   PORT=3000
   OPENAI_API_KEY=your_open_api_key
 
+## Run
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+node app.js
