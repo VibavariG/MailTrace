@@ -1,48 +1,34 @@
-const { google } = require("googleapis");
-const { oauth2Client } = require("../utils/googleAuth");
-const { classifyEmail } = require("../services/emailClassifier");
+const { fetchEmails } = require("../services/emailFetcher");
+const { connectDB } = require("../services/emailStorage"); 
 
 const listEmails = async (req, res) => {
   try {
-    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-
-    // Fetch all email messagess
-    const response = await gmail.users.messages.list({ userId: "me", q: "" });
-    if (!response.data.messages) return res.json([]); // No emails found
-
-    // Process each email
-    const emailDetails = await Promise.all(
-      response.data.messages.map(async (message) => {
-        const email = await gmail.users.messages.get({
-          userId: "me",
-          id: message.id,
-        });
-
-        // Extract subject, sender, date, and body
-        const headers = email.data.payload.headers;
-        const subject = headers.find((header) => header.name === "Subject")?.value || "No Subject";
-        const from = headers.find((header) => header.name === "From")?.value || "Unknown Sender";
-        const date = headers.find((header) => header.name === "Date")?.value || "Unknown Date";
-
-        const body = email.data.payload.parts?.find((part) => part.mimeType === "text/plain")?.body?.data || "";
-        const decodedBody = Buffer.from(body, "base64").toString("utf8");
-
-        const emailContent = `${subject} ${decodedBody}`; // Combine subject and body for analysis
-
-        // Classify the email using OpenAI
-        const category = await classifyEmail(emailContent);
-
-        return { id: message.id, subject, from, date, category };
-      })
-    );
-
-    // Filter out unrelated emails
-    const relevantEmails = emailDetails.filter((email) => email.category !== "Unrelated");
-    res.json(relevantEmails);
+    const collection = await connectDB();  
+    const emails = await collection.find({}).toArray();
+    res.json(emails);
   } catch (error) {
-    console.error("Error fetching emails:", error);
-    res.status(500).send("Failed to fetch emails.");
+    console.error("❌ Error fetching emails:", error);
+    res.status(500).json({ error: "Failed to fetch emails", details: error.message });
   }
 };
 
-module.exports = { listEmails };
+
+const refreshEmails = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body; // Get date range from request body
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: "Missing startDate or endDate parameters" });
+    }
+
+    console.log(`🔄 Refreshing emails from ${startDate} to ${endDate}...`);
+    
+    const emails = await fetchEmails(startDate, endDate);
+    res.json({ message: "Emails refreshed successfully", count: emails.length });
+  } catch (error) {
+    console.error("❌ Error in refreshEmails:", error);
+    res.status(500).json({ error: "Failed to refresh emails", details: error.message });
+  }
+};
+
+module.exports = { listEmails, refreshEmails };
