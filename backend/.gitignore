@@ -30,3 +30,5 @@ yarn.lock
 *.bak
 *.tmp
 
+# Ignore Python virtual environment
+venv/
