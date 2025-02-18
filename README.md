@@ -8,6 +8,7 @@ Create a `.env` file in the root directory with the following structure:
   REDIRECT_URI=http://localhost:3000/oauth2callback
   PORT=3000
   OPENAI_API_KEY=your_open_api_key
+  MONGO_URI=mongodb+srv://your-username:your-password@cluster.mongodb.net/mailtrace?retryWrites=true&w=majority
 
 ## Run
 cd backend
